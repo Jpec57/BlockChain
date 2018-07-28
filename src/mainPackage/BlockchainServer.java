@@ -12,25 +12,16 @@ import java.util.ArrayList;
 public class BlockchainServer extends Thread {
     public static final int PORT_NUMBER = 8081;
     int num_client = 0;
+    public static ArrayList<Socket> sockets = new ArrayList<Socket>();
 
     protected Socket socket;
 
-    /*
-	public int addClient(PrintWriter m_out) {
-		return 0;
-	}
 
-	public void sendAll(String message, String string) {
-		
-	}
-
-	public void delClient(int m_numClient) {
-		
-	}
-	*/
     private BlockchainServer(Socket socket) {
         this.socket = socket;
         System.out.println("New client connected from " + socket.getInetAddress().getHostAddress());
+        sockets.add(socket);
+        System.out.println("SIZE: "+sockets.size());
         start();
     }
 
@@ -40,8 +31,6 @@ public class BlockchainServer extends Thread {
         try {
             in = socket.getInputStream();
             out = socket.getOutputStream();
-            num_client++;
-            out.write(num_client);
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String request;
             while ((request = br.readLine()) != null) {
@@ -50,13 +39,20 @@ public class BlockchainServer extends Thread {
                 if (arr[0].equals("transaction")) 
                 {
                 	String res = "Cool une transaction :)\n";
+                	out.write(res.getBytes()); 
+                }
+                if (arr[0].equals("login")) 
+                {
+                	String res = "NUM "+this.num_client+" ";
+                	this.num_client++;
                 	out.write(res.getBytes());
                 }
                 request += '\n';
                 out.write(request.getBytes());
             }
-        } catch (IOException ex) {
-            System.out.println("Unable to get streams from client");
+        }catch(Exception e)
+        {
+        	System.out.println(e.getMessage());
         } finally {
             try {
                 in.close();
@@ -65,7 +61,7 @@ public class BlockchainServer extends Thread {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        }
+        } 
     }
 
     public static void main(String[] args) {
