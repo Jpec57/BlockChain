@@ -1,8 +1,9 @@
 package mainPackage;
+import java.io.Serializable;
 import java.security.*;
 import java.util.ArrayList;
 
-public class Transaction {
+public class Transaction implements Serializable {
 	public String transactionId; // this is also the hash of the transaction.
 	public PublicKey sender; // senders address/public key.
 	public PublicKey recipient; // Recipients address/public key.
